@@ -6,7 +6,7 @@ import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { api } from "./lib/api";
 import type { Overview, SessionRecord, WatchdogSettings } from "./lib/types";
 
-const CURRENT_VERSION = "0.1.0";
+const CURRENT_VERSION = "0.1.1";
 const RELEASES_URL = "https://github.com/AntaresYuan/claude-credit-watchdog/releases/latest";
 const RELEASES_API = "https://api.github.com/repos/AntaresYuan/claude-credit-watchdog/releases/latest";
 
