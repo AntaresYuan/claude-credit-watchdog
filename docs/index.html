@@ -452,7 +452,9 @@
     <div class="step-num">1</div>
     <div class="step-body">
       <h4>Download and open the DMG</h4>
-      <p>Download the DMG for your Mac from the releases page, drag the app to your Applications folder, then right-click → Open the first time (required for unsigned apps).</p>
+      <p>Download the DMG (universal — works on Apple Silicon and Intel), drag the app to your Applications folder. Right-click the app → <strong>Open</strong> the first time, then click Open in the dialog (required for unsigned apps).</p>
+      <p style="margin-top:8px">If macOS still blocks it, run in Terminal:</p>
+      <div class="code-block">xattr -dr com.apple.quarantine "/Applications/Claude Credit Watchdog.app"</div>
     </div>
   </div>
 

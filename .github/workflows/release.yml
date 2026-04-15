@@ -8,15 +8,6 @@ on:
 
 jobs:
   build:
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - target: aarch64-apple-darwin
-            label: apple-silicon
-          - target: x86_64-apple-darwin
-            label: intel
-
     runs-on: macos-latest
 
     steps:
@@ -29,19 +20,19 @@ jobs:
 
       - uses: dtolnay/rust-toolchain@stable
         with:
-          targets: ${{ matrix.target }}
+          targets: aarch64-apple-darwin,x86_64-apple-darwin
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Build
-        run: npm run tauri:build -- --target ${{ matrix.target }}
+      - name: Build universal binary
+        run: npm run tauri:build -- --target universal-apple-darwin
 
       - name: Upload DMG
         uses: actions/upload-artifact@v4
         with:
-          name: dmg-${{ matrix.label }}
-          path: src-tauri/target/${{ matrix.target }}/release/bundle/dmg/*.dmg
+          name: dmg-universal
+          path: src-tauri/target/universal-apple-darwin/release/bundle/dmg/*.dmg
 
   release:
     needs: build
