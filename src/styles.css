@@ -1,20 +1,18 @@
 :root {
   color-scheme: dark;
-  --ink-1: #071120;
-  --ink-2: #102344;
-  --ink-3: #241936;
-  --mist: #f5fbff;
-  --muted: #acbad8;
-  --mint: #63f5e0;
-  --mint-ring: #163b50;
-  --tangerine: #ff9b7a;
-  --tangerine-ring: #4c2238;
-  --settings-bg: #f4efe7;
-  --settings-card: rgba(255, 255, 255, 0.76);
-  --settings-text: #18252b;
-  --settings-muted: #5c7077;
-  --widget-shadow: 0 16px 34px rgba(3, 10, 13, 0.18);
-  --card-shadow: 0 26px 60px rgba(15, 28, 31, 0.14);
+  --ink-1: #0f0518;
+  --ink-2: #1e0830;
+  --ink-3: #280635;
+  --mist: #fff0f8;
+  --muted: #c09ab8;
+  /* ready: hot pink */
+  --rose: #ff4d8f;
+  --rose-ring: #3d0a28;
+  /* limited: warm coral */
+  --coral: #ff6450;
+  --coral-ring: #3d100a;
+  /* brand gradient */
+  --grad: linear-gradient(135deg, #ff6450, #dc3ca0 50%, #7c18dc);
   font-family: "Avenir Next", "SF Pro Display", sans-serif;
 }
 
@@ -49,16 +47,18 @@ input {
   background: transparent;
 }
 
+/* ── Widget card ─────────────────────────────────────────────────────────── */
+
 .widget-card {
   width: 100%;
   height: 100%;
   border-radius: 999px;
-  border: 1px solid #27486d;
+  border: 1px solid rgba(220, 60, 160, 0.28);
   background:
-    radial-gradient(circle at 14% 18%, #153558 0, #153558 13%, transparent 35%),
-    radial-gradient(circle at 78% 16%, #234a74 0, #234a74 10%, transparent 28%),
-    radial-gradient(circle at 88% 82%, #4c2647 0, #4c2647 12%, transparent 38%),
-    linear-gradient(135deg, #071120, #102344 48%, #241936);
+    radial-gradient(circle at 14% 18%, #2a0838 0, #2a0838 13%, transparent 35%),
+    radial-gradient(circle at 78% 16%, #380850 0, #380850 10%, transparent 28%),
+    radial-gradient(circle at 88% 82%, #300535 0, #300535 12%, transparent 38%),
+    linear-gradient(135deg, #0f0518, #1e0830 48%, #28063a);
   color: var(--mist);
   box-shadow: none;
   overflow: hidden;
@@ -67,20 +67,20 @@ input {
 
 .widget-card.is-ready {
   box-shadow:
-    inset 0 0 0 1px rgba(99, 245, 224, 0.1),
-    0 0 0 1px rgba(88, 163, 255, 0.08);
+    inset 0 0 0 1px rgba(255, 77, 143, 0.12),
+    0 0 0 1px rgba(220, 60, 160, 0.08);
 }
 
 .widget-card.is-limited {
-  border-color: #6c3353;
+  border-color: rgba(255, 100, 80, 0.4);
   background:
-    radial-gradient(circle at 16% 18%, #403a73 0, #403a73 12%, transparent 34%),
-    radial-gradient(circle at 80% 16%, #7a3157 0, #7a3157 11%, transparent 28%),
-    radial-gradient(circle at 88% 82%, #7e402e 0, #7e402e 12%, transparent 36%),
-    linear-gradient(135deg, #170f21, #3a1930 48%, #4a241d);
+    radial-gradient(circle at 16% 18%, #3d1025 0, #3d1025 12%, transparent 34%),
+    radial-gradient(circle at 80% 16%, #4a0820 0, #4a0820 11%, transparent 28%),
+    radial-gradient(circle at 88% 82%, #3a0510 0, #3a0510 12%, transparent 36%),
+    linear-gradient(135deg, #180510, #2d0818 48%, #200510);
   box-shadow:
-    inset 0 0 0 1px rgba(255, 155, 122, 0.12),
-    0 0 0 1px rgba(206, 99, 158, 0.08);
+    inset 0 0 0 1px rgba(255, 100, 80, 0.14),
+    0 0 0 1px rgba(220, 60, 100, 0.1);
 }
 
 .widget-card:active {
@@ -96,6 +96,8 @@ input {
   padding: 10px 8px 10px 12px;
 }
 
+/* ── Status dot ──────────────────────────────────────────────────────────── */
+
 .status-dot {
   width: 10px;
   height: 10px;
@@ -103,14 +105,16 @@ input {
 }
 
 .status-dot.is-ready {
-  background: var(--mint);
-  box-shadow: 0 0 0 7px var(--mint-ring);
+  background: var(--rose);
+  box-shadow: 0 0 0 7px var(--rose-ring);
 }
 
 .status-dot.is-limited {
-  background: var(--tangerine);
-  box-shadow: 0 0 0 7px var(--tangerine-ring);
+  background: var(--coral);
+  box-shadow: 0 0 0 7px var(--coral-ring);
 }
+
+/* ── Widget copy ─────────────────────────────────────────────────────────── */
 
 .widget-copy {
   min-width: 0;
@@ -135,6 +139,8 @@ input {
   text-overflow: ellipsis;
 }
 
+/* ── Widget actions ──────────────────────────────────────────────────────── */
+
 .widget-actions {
   display: flex;
   align-items: center;
@@ -147,24 +153,37 @@ input {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid #3c5f88;
+  border: 1px solid rgba(220, 60, 160, 0.3);
   border-radius: 999px;
-  background: linear-gradient(180deg, #1b2d49, #17253d);
+  background: linear-gradient(180deg, #2a0838, #1f0528);
   color: var(--mist);
   cursor: pointer;
   transition: transform 140ms ease, background 140ms ease, border-color 140ms ease;
-  cursor: pointer;
 }
 
 .icon-chip:hover,
+.resume-chip:hover,
 .save-button:hover,
 .plain-link:hover {
   transform: translateY(-1px);
 }
 
 .icon-chip:hover {
-  border-color: #5b86c0;
-  background: linear-gradient(180deg, #22395b, #1b2c49);
+  border-color: rgba(220, 60, 160, 0.6);
+  background: linear-gradient(180deg, #380a4a, #2a0838);
+}
+
+.resume-chip {
+  width: auto;
+  min-width: 58px;
+  padding: 0 10px;
+  background: var(--grad);
+  border-color: transparent;
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 700;
+  box-shadow: none;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.3);
 }
 
 .icon-gear {
@@ -178,10 +197,10 @@ input {
 .settings-page {
   height: 100vh;
   background:
-    radial-gradient(circle at 14% 12%, #153558 0, #153558 14%, transparent 36%),
-    radial-gradient(circle at 82% 10%, #234a74 0, #234a74 10%, transparent 28%),
-    radial-gradient(circle at 90% 88%, #4c2647 0, #4c2647 12%, transparent 38%),
-    linear-gradient(135deg, #071120, #102344 50%, #241936);
+    radial-gradient(ellipse at 12% 10%, #3a0838 0, transparent 40%),
+    radial-gradient(ellipse at 88% 8%,  #2a0850 0, transparent 35%),
+    radial-gradient(ellipse at 90% 90%, #380520 0, transparent 40%),
+    linear-gradient(135deg, #0f0518, #1e0830 50%, #28063a);
   color: var(--mist);
   overflow: hidden;
 }
@@ -214,14 +233,16 @@ input {
   font-weight: 500;
 }
 
+/* ── Update banner ───────────────────────────────────────────────────────── */
+
 .update-banner {
   display: flex;
   align-items: center;
   gap: 8px;
   padding: 10px 24px;
-  background: rgba(99, 245, 224, 0.07);
-  border-bottom: 1px solid rgba(99, 245, 224, 0.15);
-  color: var(--mint);
+  background: rgba(255, 77, 143, 0.08);
+  border-bottom: 1px solid rgba(255, 77, 143, 0.18);
+  color: var(--rose);
   font-size: 0.78rem;
   font-weight: 600;
   text-decoration: none;
@@ -229,18 +250,19 @@ input {
 }
 
 .update-banner:hover {
-  background: rgba(99, 245, 224, 0.12);
+  background: rgba(255, 77, 143, 0.14);
 }
 
 .update-dot {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: var(--mint);
-  box-shadow: 0 0 0 3px rgba(99, 245, 224, 0.2);
+  background: var(--rose);
+  box-shadow: 0 0 0 3px rgba(255, 77, 143, 0.22);
   flex-shrink: 0;
 }
 
+/* ── Settings body ───────────────────────────────────────────────────────── */
 
 .settings-body {
   flex: 1;
@@ -274,7 +296,7 @@ input {
   padding: 14px 16px;
   border-radius: 16px;
   background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(220, 60, 160, 0.1);
   transition: background 140ms ease;
 }
 
@@ -296,7 +318,8 @@ input {
   line-height: 1.4;
 }
 
-/* Custom toggle switch */
+/* ── Toggle switch ───────────────────────────────────────────────────────── */
+
 .toggle-switch {
   position: relative;
   flex-shrink: 0;
@@ -336,14 +359,16 @@ input {
 }
 
 .toggle-switch input:checked + .toggle-slider {
-  background: linear-gradient(135deg, #1c8a7a, #2cae8b);
-  border-color: rgba(99, 245, 224, 0.25);
+  background: linear-gradient(135deg, #c0187a, #9010c8);
+  border-color: rgba(220, 60, 160, 0.3);
 }
 
 .toggle-switch input:checked + .toggle-slider::before {
   background: #fff;
   transform: translateX(16px);
 }
+
+/* ── Settings footer ─────────────────────────────────────────────────────── */
 
 .settings-footer {
   display: flex;
@@ -370,18 +395,19 @@ input {
 
 .save-button {
   border: none;
-  background: linear-gradient(135deg, #ffbb7b, #ff7a92 54%, #c966ff);
-  color: #18090f;
+  background: var(--grad);
+  color: #fff;
   font-weight: 700;
   font-size: 0.82rem;
   padding: 10px 22px;
   border-radius: 999px;
   cursor: pointer;
   transition: transform 140ms ease, box-shadow 140ms ease;
-  box-shadow: 0 8px 20px rgba(255, 122, 146, 0.18);
+  box-shadow: 0 8px 20px rgba(220, 60, 160, 0.3);
+  text-shadow: 0 1px 3px rgba(0,0,0,0.25);
 }
 
 .save-button:hover {
   transform: translateY(-1px);
-  box-shadow: 0 12px 28px rgba(255, 122, 146, 0.28);
+  box-shadow: 0 12px 28px rgba(220, 60, 160, 0.45);
 }
