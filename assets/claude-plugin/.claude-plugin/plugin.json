@@ -1,0 +1,8 @@
+{
+  "name": "credit-watchdog",
+  "description": "Track Claude Code credit resets, surface status line hints, and coordinate resume automation.",
+  "author": {
+    "name": "Antares Yuan"
+  }
+}
+

@@ -1,0 +1,24 @@
+#!/bin/sh
+SCRIPT_DIR=$(CDPATH= cd -- "$(dirname "$0")" && pwd)
+
+case "$1" in
+  ui)
+    shift
+    DEFAULT_APP="$HOME/Applications/Claude Credit Watchdog.app/Contents/MacOS/Claude Credit Watchdog"
+    if [ -x "$DEFAULT_APP" ]; then
+      exec "$DEFAULT_APP" "$@"
+    fi
+    if [ -n "$CCWATCH_APP" ] && [ -x "$CCWATCH_APP" ]; then
+      exec "$CCWATCH_APP" "$@"
+    fi
+    echo "ccwatch ui expects the built Tauri app in ~/Applications or CCWATCH_APP to be set." >&2
+    exit 1
+    ;;
+  *)
+    CCWATCH_PY="${CCWATCH_SCRIPT:-$HOME/.local/share/credit-watchdog/ccwatch.py}"
+    if [ ! -f "$CCWATCH_PY" ]; then
+      CCWATCH_PY="$SCRIPT_DIR/ccwatch.py"
+    fi
+    exec python3 "$CCWATCH_PY" "$@"
+    ;;
+esac

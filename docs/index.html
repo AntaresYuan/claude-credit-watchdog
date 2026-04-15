@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Claude Credit Watchdog</title>
+  <meta name="description" content="A macOS menu bar app that monitors your Claude Code credit resets and automatically resumes your sessions." />
+  <style>
+    :root {
+      --ink: #071120;
+      --mist: #f5fbff;
+      --muted: #8ca0be;
+      --mint: #63f5e0;
+      --tangerine: #ff9b7a;
+      --card-bg: rgba(255,255,255,0.04);
+      --card-border: rgba(255,255,255,0.08);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+      background:
+        radial-gradient(ellipse at 15% 10%, #153558 0, transparent 40%),
+        radial-gradient(ellipse at 85% 8%, #234a74 0, transparent 35%),
+        radial-gradient(ellipse at 90% 90%, #4c2647 0, transparent 40%),
+        linear-gradient(135deg, #071120, #102344 50%, #241936);
+      color: var(--mist);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    a { color: var(--mint); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ── Nav ── */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 48px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--mist);
+    }
+
+    .dog-icon {
+      width: 28px;
+      height: 28px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+
+    .nav-links a { color: var(--muted); transition: color 150ms; }
+    .nav-links a:hover { color: var(--mist); text-decoration: none; }
+
+    .nav-gh {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 999px;
+      padding: 6px 14px;
+      color: var(--mist) !important;
+      font-size: 0.82rem;
+      font-weight: 600;
+      transition: background 150ms;
+    }
+    .nav-gh:hover { background: rgba(255,255,255,0.07); text-decoration: none !important; }
+
+    /* ── Hero ── */
+    .hero {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 96px 32px 72px;
+      text-align: center;
+    }
+
+    .badge {
+      display: inline-block;
+      background: rgba(99,245,224,0.1);
+      border: 1px solid rgba(99,245,224,0.2);
+      color: var(--mint);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 999px;
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      font-size: clamp(2.4rem, 5vw, 3.6rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: 20px;
+    }
+
+    h1 span {
+      background: linear-gradient(135deg, #ffbb7b, #ff7a92 50%, #c966ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: 1.15rem;
+      color: var(--muted);
+      max-width: 520px;
+      margin: 0 auto 40px;
+      line-height: 1.65;
+    }
+
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, #ffbb7b, #ff7a92 54%, #c966ff);
+      color: #18090f;
+      font-weight: 700;
+      font-size: 0.92rem;
+      padding: 13px 26px;
+      border-radius: 999px;
+      transition: transform 140ms, box-shadow 140ms;
+      box-shadow: 0 8px 24px rgba(255,122,146,0.22);
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 14px 32px rgba(255,122,146,0.32); text-decoration: none; }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid rgba(255,255,255,0.14);
+      color: var(--mist);
+      font-size: 0.92rem;
+      font-weight: 600;
+      padding: 13px 26px;
+      border-radius: 999px;
+      transition: background 140ms, transform 140ms;
+    }
+    .btn-secondary:hover { background: rgba(255,255,255,0.07); transform: translateY(-2px); text-decoration: none; }
+
+    .hint {
+      margin-top: 16px;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    /* ── Widget preview ── */
+    .preview-wrap {
+      max-width: 480px;
+      margin: 72px auto 0;
+    }
+
+    .menubar-mock {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.82rem;
+    }
+
+    .mock-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--mint);
+      box-shadow: 0 0 0 4px rgba(99,245,224,0.15);
+      flex-shrink: 0;
+    }
+    .mock-dot.limited { background: var(--tangerine); box-shadow: 0 0 0 4px rgba(255,155,122,0.15); }
+
+    .mock-text strong { display: block; font-weight: 700; color: var(--mist); }
+    .mock-text small { color: var(--muted); font-size: 0.75rem; }
+
+    .mock-resume {
+      margin-left: auto;
+      background: linear-gradient(135deg, #ffbb7b, #ff7a92 54%, #c966ff);
+      color: #18090f;
+      font-weight: 700;
+      font-size: 0.72rem;
+      padding: 4px 12px;
+      border-radius: 999px;
+    }
+
+    /* ── Features ── */
+    .features {
+      max-width: 900px;
+      margin: 96px auto 0;
+      padding: 0 32px;
+    }
+
+    .section-label {
+      text-align: center;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 48px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 24px;
+      transition: background 150ms;
+    }
+    .card:hover { background: rgba(255,255,255,0.07); }
+
+    .card-icon {
+      font-size: 1.6rem;
+      margin-bottom: 12px;
+    }
+
+    .card h3 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: var(--mist);
+    }
+
+    .card p {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    /* ── Install ── */
+    .install {
+      max-width: 680px;
+      margin: 96px auto 0;
+      padding: 0 32px;
+    }
+
+    .code-block {
+      background: rgba(0,0,0,0.35);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 18px 22px;
+      font-family: "SF Mono", "Fira Code", monospace;
+      font-size: 0.82rem;
+      color: var(--mint);
+      margin: 16px 0;
+      overflow-x: auto;
+      white-space: pre;
+    }
+
+    .step {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .step-num {
+      flex-shrink: 0;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(99,245,224,0.1);
+      border: 1px solid rgba(99,245,224,0.2);
+      color: var(--mint);
+      font-size: 0.78rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 2px;
+    }
+
+    .step-body h4 {
+      font-size: 0.92rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .step-body p {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      padding: 80px 32px 40px;
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+
+    footer a { color: var(--muted); }
+    footer a:hover { color: var(--mist); }
+
+    @media (max-width: 600px) {
+      nav { padding: 16px 24px; }
+      .nav-links { gap: 16px; }
+      .hero { padding: 64px 24px 48px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav>
+  <div class="nav-brand">
+    <svg class="dog-icon" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="8" cy="20" rx="5" ry="10" fill="white" opacity="0.9"/>
+      <ellipse cx="28" cy="20" rx="5" ry="10" fill="white" opacity="0.9"/>
+      <circle cx="18" cy="16" r="10" fill="white"/>
+      <ellipse cx="18" cy="25" rx="5.5" ry="4" fill="white"/>
+      <circle cx="13.5" cy="14.5" r="2.4" fill="#102344"/>
+      <circle cx="22.5" cy="14.5" r="2.4" fill="#102344"/>
+      <ellipse cx="18" cy="24" rx="2.2" ry="1.3" fill="#102344"/>
+    </svg>
+    Claude Credit Watchdog
+  </div>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#install">Install</a>
+    <a href="https://github.com/YOUR_USERNAME/claude-credit-watchdog" class="nav-gh">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.342-3.369-1.342-.454-1.155-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0 1 12 6.836a9.59 9.59 0 0 1 2.504.337c1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.202 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg>
+      GitHub
+    </a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="badge">macOS Menu Bar App · Open Source</div>
+  <h1>Never miss a<br><span>Claude credit reset</span></h1>
+  <p class="hero-sub">
+    A lightweight menu bar watchdog that monitors your Claude Code sessions,
+    alerts you the moment credits renew, and automatically resumes your work.
+  </p>
+  <div class="hero-actions">
+    <a href="https://github.com/YOUR_USERNAME/claude-credit-watchdog/releases/latest" class="btn-primary">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2zm-1 14.5v-9l6 4.5-6 4.5z"/></svg>
+      Download for Mac
+    </a>
+    <a href="https://github.com/YOUR_USERNAME/claude-credit-watchdog" class="btn-secondary">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.342-3.369-1.342-.454-1.155-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0 1 12 6.836a9.59 9.59 0 0 1 2.504.337c1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.202 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg>
+      View on GitHub
+    </a>
+  </div>
+  <p class="hint">macOS 13+ · Apple Silicon &amp; Intel · Free &amp; open source</p>
+
+  <!-- Widget preview mockup -->
+  <div class="preview-wrap">
+    <div style="font-size:0.72rem;color:var(--muted);margin-bottom:8px;text-align:left;">Credit locked state</div>
+    <div class="menubar-mock">
+      <div class="mock-dot limited"></div>
+      <div class="mock-text">
+        <strong>Credit locked</strong>
+        <small>Resets in 47m</small>
+      </div>
+      <div class="mock-resume">Resume</div>
+    </div>
+    <div style="font-size:0.72rem;color:var(--muted);margin:12px 0 8px;text-align:left;">Ready state</div>
+    <div class="menubar-mock">
+      <div class="mock-dot"></div>
+      <div class="mock-text">
+        <strong>Claude ready</strong>
+        <small>No limit hit</small>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Features -->
+<section class="features" id="features">
+  <p class="section-label">What it does</p>
+  <h2 class="section-title">Everything, automatically</h2>
+  <div class="grid">
+    <div class="card">
+      <div class="card-icon">⏱</div>
+      <h3>Real-time tracking</h3>
+      <p>Polls your Claude Code sessions every 15 seconds and reads exact reset timestamps from hook data.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🔔</div>
+      <h3>Hard-to-miss alerts</h3>
+      <p>macOS notification, a blocking dialog, and a voice announcement the moment your credits renew.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">▶️</div>
+      <h3>Auto resume</h3>
+      <p>Automatically injects "Please continue with what we left" into the correct Terminal.app tab.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🐶</div>
+      <h3>Menu bar widget</h3>
+      <p>Tiny floating pill shows status and countdown. Lives in the menu bar — no Dock icon.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🪝</div>
+      <h3>Claude Code hooks</h3>
+      <p>Integrates via <code style="font-size:0.78rem;color:var(--mint)">StopFailure</code> and <code style="font-size:0.78rem;color:var(--mint)">SessionStart</code> hooks for precise detection.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🔒</div>
+      <h3>100% local</h3>
+      <p>No cloud, no account. Everything runs on your machine. Your session data never leaves.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Install -->
+<section class="install" id="install">
+  <p class="section-label" style="text-align:left">Installation</p>
+  <h2 class="section-title" style="text-align:left;font-size:1.8rem">Get started in 2 steps</h2>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <h4>Download and open the DMG</h4>
+      <p>Download the DMG for your Mac from the releases page, drag the app to your Applications folder, then right-click → Open the first time (required for unsigned apps).</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <h4>Run the installer</h4>
+      <p>The installer sets up the background daemon, Claude Code hooks, and status line integration.</p>
+      <div class="code-block">bash ~/Applications/Claude\ Credit\ Watchdog.app/Contents/Resources/scripts/install.sh</div>
+      <p>Then restart Claude Code and you're done.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <p>
+    Made with ☕ and too many rate limits ·
+    <a href="https://github.com/YOUR_USERNAME/claude-credit-watchdog">GitHub</a> ·
+    MIT License
+  </p>
+</footer>
+
+</body>
+</html>
