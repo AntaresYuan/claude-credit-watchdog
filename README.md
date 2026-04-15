@@ -20,7 +20,7 @@ A macOS menu bar app that monitors your Claude Code credit resets, fires hard-to
 
 ### Option A — DMG (recommended)
 
-1. Download the latest DMG from [Releases](https://github.com/YOUR_USERNAME/claude-credit-watchdog/releases)
+1. Download the latest DMG from [Releases](https://github.com/AntaresYuan/claude-credit-watchdog/releases)
 2. Open the DMG, drag the app to `~/Applications`
 3. Right-click → **Open** the first time (required for unsigned apps)
 4. Run the installer to set up the daemon and Claude Code hooks:
@@ -36,7 +36,7 @@ bash ~/Applications/Claude\ Credit\ Watchdog.app/Contents/Resources/scripts/inst
 Requirements: [Rust](https://rustup.rs), [Node.js 18+](https://nodejs.org), macOS 13+
 
 ```sh
-git clone https://github.com/YOUR_USERNAME/claude-credit-watchdog.git
+git clone https://github.com/AntaresYuan/claude-credit-watchdog.git
 cd claude-credit-watchdog
 npm install
 npm run tauri:build
