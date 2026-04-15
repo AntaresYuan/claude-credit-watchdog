@@ -331,6 +331,31 @@ export default function App() {
     }
   }
 
+  // Auto-hide widget after 5 minutes of no interaction
+  useEffect(() => {
+    if (isSettingsPage) return;
+
+    const TIMEOUT_MS = 5 * 60 * 1000;
+    let hideTimer: number;
+
+    const resetTimer = () => {
+      clearTimeout(hideTimer);
+      hideTimer = window.setTimeout(() => {
+        getCurrentWindow().hide().catch(() => {});
+      }, TIMEOUT_MS);
+    };
+
+    resetTimer();
+    window.addEventListener("mousemove", resetTimer);
+    window.addEventListener("mousedown", resetTimer);
+
+    return () => {
+      clearTimeout(hideTimer);
+      window.removeEventListener("mousemove", resetTimer);
+      window.removeEventListener("mousedown", resetTimer);
+    };
+  }, [isSettingsPage]);
+
   useEffect(() => {
     void refresh();
 
