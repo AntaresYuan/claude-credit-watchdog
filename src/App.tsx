@@ -1,10 +1,33 @@
-import { startTransition, useEffect, useMemo, useState } from "react";
+import { startTransition, useEffect, useMemo, useRef, useState } from "react";
 import { LogicalSize } from "@tauri-apps/api/dpi";
 import { invoke } from "@tauri-apps/api/core";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { api } from "./lib/api";
 import type { Overview, SessionRecord, WatchdogSettings } from "./lib/types";
+
+const CURRENT_VERSION = "0.1.0";
+const RELEASES_URL = "https://github.com/AntaresYuan/claude-credit-watchdog/releases/latest";
+const RELEASES_API = "https://api.github.com/repos/AntaresYuan/claude-credit-watchdog/releases/latest";
+
+function useUpdateCheck() {
+  const [latestVersion, setLatestVersion] = useState<string | null>(null);
+  const checked = useRef(false);
+
+  useEffect(() => {
+    if (checked.current) return;
+    checked.current = true;
+    fetch(RELEASES_API)
+      .then((r) => r.json())
+      .then((data) => {
+        const latest = (data.tag_name as string | undefined)?.replace(/^v/, "");
+        if (latest && latest !== CURRENT_VERSION) setLatestVersion(latest);
+      })
+      .catch(() => {});
+  }, []);
+
+  return latestVersion;
+}
 
 const defaultOverview: Overview = {
   watcher_enabled: true,
@@ -147,6 +170,8 @@ function SettingsPage({
   setSettings: (next: WatchdogSettings) => void;
   refresh: () => Promise<void>;
 }) {
+  const latestVersion = useUpdateCheck();
+
   async function saveSettings() {
     await api.saveSettings(settings);
     await refresh();
@@ -157,7 +182,16 @@ function SettingsPage({
       <section className="settings-panel">
         <div className="settings-topbar">
           <h1 className="settings-title">Settings</h1>
+          <span className="version-badge">v{CURRENT_VERSION}</span>
         </div>
+
+        {latestVersion && (
+          <a className="update-banner" href={RELEASES_URL} target="_blank" rel="noreferrer">
+            <span className="update-dot" />
+            v{latestVersion} available — click to download
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{marginLeft: 4}}><path d="M7 17L17 7M7 7h10v10"/></svg>
+          </a>
+        )}
 
         <div className="settings-body">
           <div className="settings-section">

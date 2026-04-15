@@ -208,6 +208,39 @@ input {
   color: var(--mist);
 }
 
+.version-badge {
+  font-size: 0.7rem;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.update-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 24px;
+  background: rgba(99, 245, 224, 0.07);
+  border-bottom: 1px solid rgba(99, 245, 224, 0.15);
+  color: var(--mint);
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 140ms ease;
+}
+
+.update-banner:hover {
+  background: rgba(99, 245, 224, 0.12);
+}
+
+.update-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--mint);
+  box-shadow: 0 0 0 3px rgba(99, 245, 224, 0.2);
+  flex-shrink: 0;
+}
+
 
 .settings-body {
   flex: 1;
