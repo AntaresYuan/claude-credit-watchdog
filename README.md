@@ -2,6 +2,8 @@
 
 A macOS menu bar app that monitors your Claude Code credit resets, fires hard-to-miss alerts, and automatically resumes your sessions — so you never lose momentum when the 5-hour limit hits.
 
+**[claude-credit-watchdog.netlify.app](https://claude-credit-watchdog.netlify.app)**
+
 ![macOS 13+](https://img.shields.io/badge/macOS-13%2B-blue?style=flat-square)
 ![License MIT](https://img.shields.io/badge/license-MIT-green?style=flat-square)
 ![Built with Tauri](https://img.shields.io/badge/built%20with-Tauri-orange?style=flat-square)
