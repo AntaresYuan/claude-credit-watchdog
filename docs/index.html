@@ -54,16 +54,6 @@
     .dog-icon {
       width: 28px;
       height: 28px;
-      border-radius: 7px;
-    }
-
-    .app-icon-hero {
-      width: 120px;
-      height: 120px;
-      border-radius: 27px;
-      box-shadow: 0 24px 60px rgba(220, 60, 160, 0.35), 0 8px 24px rgba(0,0,0,0.4);
-      margin: 0 auto 28px;
-      display: block;
     }
 
     .nav-links {
@@ -352,7 +342,15 @@
 <!-- Nav -->
 <nav>
   <div class="nav-brand">
-    <img src="icon.png" class="dog-icon" alt="Claude Credit Watchdog icon" />
+    <svg class="dog-icon" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="8" cy="20" rx="5" ry="10" fill="white" opacity="0.9"/>
+      <ellipse cx="28" cy="20" rx="5" ry="10" fill="white" opacity="0.9"/>
+      <circle cx="18" cy="16" r="10" fill="white"/>
+      <ellipse cx="18" cy="25" rx="5.5" ry="4" fill="white"/>
+      <circle cx="13.5" cy="14.5" r="2.4" fill="#102344"/>
+      <circle cx="22.5" cy="14.5" r="2.4" fill="#102344"/>
+      <ellipse cx="18" cy="24" rx="2.2" ry="1.3" fill="#102344"/>
+    </svg>
     Claude Credit Watchdog
   </div>
   <div class="nav-links">
@@ -367,7 +365,6 @@
 
 <!-- Hero -->
 <section class="hero">
-  <img src="icon.png" class="app-icon-hero" alt="Claude Credit Watchdog" />
   <div class="badge">macOS Menu Bar App · Open Source</div>
   <h1>Never miss a<br><span>Claude credit reset</span></h1>
   <p class="hero-sub">
@@ -472,10 +469,9 @@
 
 <!-- Footer -->
 <footer>
-  <p>
-    Made with ☕ and too many rate limits ·
+  <p>© 2026 Claude Credit Watchdog · Made by <a href="https://github.com/AntaresYuan">AntaresYuan</a> · All rights reserved</p>
+  <p style="margin-top:8px">
     <a href="https://github.com/AntaresYuan/claude-credit-watchdog">GitHub</a> ·
-    <a href="https://claude-credit-watchdog.netlify.app">claude-credit-watchdog.netlify.app</a> ·
     MIT License
   </p>
 </footer>
