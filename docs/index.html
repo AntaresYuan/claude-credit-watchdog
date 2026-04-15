@@ -272,17 +272,53 @@
       padding: 0 32px;
     }
 
+    .code-wrap {
+      position: relative;
+      margin: 16px 0;
+    }
+
     .code-block {
       background: rgba(0,0,0,0.35);
       border: 1px solid rgba(255,255,255,0.08);
       border-radius: 12px;
-      padding: 18px 22px;
+      padding: 18px 52px 18px 22px;
       font-family: "SF Mono", "Fira Code", monospace;
       font-size: 0.82rem;
       color: var(--mint);
-      margin: 16px 0;
+      margin: 0;
       overflow-x: auto;
       white-space: pre;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 50%;
+      right: 12px;
+      transform: translateY(-50%);
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--muted);
+      transition: background 140ms ease, color 140ms ease, border-color 140ms ease;
+      flex-shrink: 0;
+    }
+
+    .copy-btn:hover {
+      background: rgba(255,255,255,0.12);
+      border-color: rgba(255,255,255,0.2);
+      color: var(--mist);
+    }
+
+    .copy-btn.copied {
+      color: var(--mint);
+      border-color: rgba(99,245,224,0.3);
+      background: rgba(99,245,224,0.08);
     }
 
     .step {
@@ -454,7 +490,12 @@
       <h4>Download and open the DMG</h4>
       <p>Download the DMG (universal — works on Apple Silicon and Intel), drag the app to your Applications folder. Right-click the app → <strong>Open</strong> the first time, then click Open in the dialog (required for unsigned apps).</p>
       <p style="margin-top:8px">If macOS still blocks it, run in Terminal:</p>
-      <div class="code-block">xattr -dr com.apple.quarantine "/Applications/Claude Credit Watchdog.app"</div>
+      <div class="code-wrap">
+        <div class="code-block">xattr -dr com.apple.quarantine "/Applications/Claude Credit Watchdog.app"</div>
+        <button class="copy-btn" aria-label="Copy" onclick="copyCode(this)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        </button>
+      </div>
     </div>
   </div>
 
@@ -463,7 +504,12 @@
     <div class="step-body">
       <h4>Run the installer</h4>
       <p>The installer sets up the background daemon, Claude Code hooks, and status line integration.</p>
-      <div class="code-block">bash ~/Applications/Claude\ Credit\ Watchdog.app/Contents/Resources/scripts/install.sh</div>
+      <div class="code-wrap">
+        <div class="code-block">bash ~/Applications/Claude\ Credit\ Watchdog.app/Contents/Resources/scripts/install.sh</div>
+        <button class="copy-btn" aria-label="Copy" onclick="copyCode(this)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        </button>
+      </div>
       <p>Then restart Claude Code and you're done.</p>
     </div>
   </div>
@@ -478,5 +524,18 @@
   </p>
 </footer>
 
+<script>
+function copyCode(btn) {
+  const text = btn.previousElementSibling.textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.classList.add("copied");
+    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+    setTimeout(() => {
+      btn.classList.remove("copied");
+      btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+    }, 2000);
+  });
+}
+</script>
 </body>
 </html>
