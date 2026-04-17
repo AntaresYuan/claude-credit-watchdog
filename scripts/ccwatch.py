@@ -328,7 +328,13 @@ def update_session_from_tab(session: dict[str, Any], tab: dict[str, Any]) -> dic
     session["error_summary"] = "Terminal text indicates a credit/session limit"
     session["detection_source"] = "terminal_text"
     if reset_guess:
-        session["resets_at"] = reset_guess
+        existing_reset = parse_iso(session.get("resets_at"))
+        # Don't overwrite a past-due resets_at — terminal still shows stale text;
+        # bumping to "next day" would hide the already-due alert.
+        if existing_reset is None or existing_reset > now_utc():
+            if reset_guess != session.get("resets_at"):
+                session.pop("dismissed_for_reset", None)
+            session["resets_at"] = reset_guess
     session["last_seen_at"] = isoformat()
     return session
 
@@ -566,6 +572,18 @@ def watcher_tick() -> dict[str, Any]:
     tabs = terminal_snapshot()
     current = now_utc()
     sessions = list_sessions()
+
+    # Collect due sessions BEFORE terminal update — otherwise update_session_from_tab
+    # may call parse_reset_time() on stale terminal text and bump resets_at to next day,
+    # causing the alert to never fire and the countdown to restart at ~24h.
+    due_sessions: list[dict[str, Any]] = []
+    for session in sessions:
+        reset_at = parse_iso(session.get("resets_at"))
+        if session.get("status") == "rate_limited" and reset_at and reset_at <= current:
+            if session.get("dismissed_for_reset") == session.get("resets_at"):
+                continue
+            due_sessions.append(session)
+
     updated_sessions = {session["session_id"]: session for session in sessions}
     for session in sessions:
         for tab in matching_tabs(session, tabs):
@@ -573,14 +591,6 @@ def watcher_tick() -> dict[str, Any]:
             save_session(session)
             updated_sessions[session["session_id"]] = session
             break
-
-    due_sessions: list[dict[str, Any]] = []
-    for session in updated_sessions.values():
-        reset_at = parse_iso(session.get("resets_at"))
-        if session.get("status") == "rate_limited" and reset_at and reset_at <= current:
-            if session.get("dismissed_for_reset") == session.get("resets_at"):
-                continue
-            due_sessions.append(session)
 
     resume_results = []
     if settings.get("watcher_enabled", True) and due_sessions:
